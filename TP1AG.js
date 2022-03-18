@@ -1,16 +1,25 @@
+import "./styles.css";
+
+document.getElementById("app").innerHTML = `
+<h1>Hello Vanilla!</h1>
+<div>
+  We use the same configuration as Parcel to bundle this sandbox, you can find more
+  info about Parcel 
+  <a href="https://parceljs.org" target="_blank" rel="noopener noreferrer">here</a>.
+</div>
+`;
 class Graphe {
-
     /*
-        Exemple de graphe:
-        [
-            { sommet: "a", successeurs: ["b", "c", "d"] },
-            { sommet: "b", successeurs: ["e"] },
-            { sommet: "c", successeurs: [] },
-            { sommet: "d", successeurs: ["c"] },
-            { sommet: "e", successeurs: [] }
-
-        ]
-    */
+          Exemple de graphe:
+          [
+              { sommet: "a", successeurs: ["b", "c", "d"] },
+              { sommet: "b", successeurs: ["e"] },
+              { sommet: "c", successeurs: [] },
+              { sommet: "d", successeurs: ["c"] },
+              { sommet: "e", successeurs: [] }
+  
+          ]
+      */
 
     arc(graphe, sommetX, sommetY) {
         for (const sommetCourant of graphe) {
@@ -39,45 +48,48 @@ class Graphe {
         // /* alt */ return this.arc(graphe, sommetX, sommetY) || this.arc(graphe, sommetY, sommetX);
     }
 
-    saisie(graphe) {
-
-    }
+    saisie(graphe) { }
 
     succ(graphe, sommetX) {
-
+        for (const sommetCourant of graphe) {
+            if (sommetCourant.sommet === sommetX) {
+                return console.log("Les successeurs : ", sommetCourant.successeurs);
+            }
+        }
     }
 
-    pred(graphe) {
-
+    pred(graphe, sommetX) {
+        const predecesseurs = [];
+        for (const sommetCourant of graphe) {
+            for (const successeursCourant of sommetCourant.successeurs) {
+                if (successeursCourant === sommetX) {
+                    predecesseurs.push(sommetCourant.sommet);
+                }
+            }
+        }
+        console.log(
+            `les predecesseurs de "${sommetX}" sont`,
+            predecesseurs.join(", ")
+        );
     }
 
-    desc(graphe, sommetX) {
+    desc(graphe, sommetX) { }
 
-    }
+    anc(graphe, sommetX) { }
 
-    anc(graphe, sommetX) {
+    compCon(graphe, sommetX) { }
 
-    }
-
-    compCon(graphe, sommetX) {
-
-    }
-
-    nbCompCon(graphe, sommetX) {
-
-    }
+    nbCompCon(graphe, sommetX) { }
 }
 const g = new Graphe();
-const res = g.arete(
+const res = g.pred(
     [
-        { sommet: "a", successeurs: ["b", "c", "d"] },
+        { sommet: "a", successeurs: ["b", "c", "d", "e"] },
         { sommet: "b", successeurs: ["e"] },
-        { sommet: "c", successeurs: [] },
+        { sommet: "c", successeurs: ["e"] },
         { sommet: "d", successeurs: ["c"] },
         { sommet: "e", successeurs: [] }
-
     ],
-    "c",
-    "d"
-)
+    "e"
+);
 console.log(res);
