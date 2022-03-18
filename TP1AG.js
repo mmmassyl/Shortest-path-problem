@@ -82,12 +82,23 @@ class Graphe {
         return Array.from(new Set([...predecesseurs, ...predecesseurs.map(predecesseur => this.anc(graphe, predecesseur)).flat()]));
     }
 
-    compCon(graphe, sommetX) { }
+    compConRec(profondeur, graphe, sommetX) {
+        const successeurs = this.succ(graphe, sommetX);
+        if (successeurs.length === 0) return profondeur;
+        return Math.max(...successeurs.map(successeur => this.compConRec(profondeur + 1, graphe, successeur)));
+    }
+
+    compCon(graphe) {
+        const profondeurs = [];
+        for (const sommetCourant of graphe) {
+            profondeurs.push(this.compConRec(0, graphe, sommetCourant.sommet))
+        }
+    }
 
     nbCompCon(graphe, sommetX) { }
 }
 const g = new Graphe();
-const res = g.anc(
+const res = g.compCon(
     [
         { sommet: "a", successeurs: ["b", "c", "d"] },
         { sommet: "b", successeurs: ["e"] },
