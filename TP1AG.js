@@ -26,7 +26,17 @@ class Graphe {
     }
 
     arete(graphe, sommetX, sommetY) {
-        return this.arc(graphe, sommetX, sommetY) || this.arc(graphe, sommetY, sommetX);
+        for (const sommetCourant of graphe) {
+            if (sommetCourant.sommet === sommetX || sommetY) {
+                for (const successeursCourant of sommetCourant.successeurs) {
+                    if (successeursCourant === sommetY || sommetX) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+        // /* alt */ return this.arc(graphe, sommetX, sommetY) || this.arc(graphe, sommetY, sommetX);
     }
 
     saisie(graphe) {
@@ -37,7 +47,7 @@ class Graphe {
 
     }
 
-    pred(graphe, sommetX) {
+    pred(graphe) {
 
     }
 
