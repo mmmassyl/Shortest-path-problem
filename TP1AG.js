@@ -1,25 +1,15 @@
-import "./styles.css";
-
-document.getElementById("app").innerHTML = `
-<h1>Hello Vanilla!</h1>
-<div>
-  We use the same configuration as Parcel to bundle this sandbox, you can find more
-  info about Parcel 
-  <a href="https://parceljs.org" target="_blank" rel="noopener noreferrer">here</a>.
-</div>
-`;
 class Graphe {
     /*
-          Exemple de graphe:
-          [
-              { sommet: "a", successeurs: ["b", "c", "d"] },
-              { sommet: "b", successeurs: ["e"] },
-              { sommet: "c", successeurs: [] },
-              { sommet: "d", successeurs: ["c"] },
-              { sommet: "e", successeurs: [] }
-  
-          ]
-      */
+            Exemple de graphe:
+            [
+                { sommet: "a", successeurs: ["b", "c", "d"] },
+                { sommet: "b", successeurs: ["e"] },
+                { sommet: "c", successeurs: [] },
+                { sommet: "d", successeurs: ["c"] },
+                { sommet: "e", successeurs: [] }
+    
+            ]
+        */
 
     arc(graphe, sommetX, sommetY) {
         for (const sommetCourant of graphe) {
@@ -53,7 +43,7 @@ class Graphe {
     succ(graphe, sommetX) {
         for (const sommetCourant of graphe) {
             if (sommetCourant.sommet === sommetX) {
-                return console.log("Les successeurs : ", sommetCourant.successeurs);
+                return sommetCourant.successeurs;
             }
         }
     }
@@ -67,24 +57,39 @@ class Graphe {
                 }
             }
         }
-        console.log(
-            `les predecesseurs de "${sommetX}" sont`,
-            predecesseurs.join(", ")
+        /*console.log(
+          `les predecesseurs de "${sommetX}" sont`,
+          predecesseurs.join(", ")
+        );
+        */
+        return predecesseurs;
+    }
+
+    desc(graphe, sommetX) {
+        return Array.from(
+            new Set([
+                ...this.succ(graphe, sommetX),
+                ...graphe
+                    .find((sommet) => sommet.sommet === sommetX)
+                    .successeurs.map((successeur) => this.desc(graphe, successeur))
+                    .flat()
+            ])
         );
     }
 
-    desc(graphe, sommetX) { }
-
-    anc(graphe, sommetX) { }
+    anc(graphe, sommetX) {
+        const predecesseurs = this.pred(graphe, sommetX)
+        return Array.from(new Set([...predecesseurs, ...predecesseurs.map(predecesseur => this.anc(graphe, predecesseur)).flat()]));
+    }
 
     compCon(graphe, sommetX) { }
 
     nbCompCon(graphe, sommetX) { }
 }
 const g = new Graphe();
-const res = g.pred(
+const res = g.anc(
     [
-        { sommet: "a", successeurs: ["b", "c", "d", "e"] },
+        { sommet: "a", successeurs: ["b", "c", "d"] },
         { sommet: "b", successeurs: ["e"] },
         { sommet: "c", successeurs: ["e"] },
         { sommet: "d", successeurs: ["c"] },
