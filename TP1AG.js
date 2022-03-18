@@ -26,7 +26,7 @@ class Graphe {
     }
 
     arete(graphe, sommetX, sommetY) {
-
+        return this.arc(graphe, sommetX, sommetY) || this.arc(graphe, sommetY, sommetX);
     }
 
     saisie(graphe) {
@@ -58,7 +58,7 @@ class Graphe {
     }
 }
 const g = new Graphe();
-const res = g.arc(
+const res = g.arete(
     [
         { sommet: "a", successeurs: ["b", "c", "d"] },
         { sommet: "b", successeurs: ["e"] },
@@ -67,7 +67,7 @@ const res = g.arc(
         { sommet: "e", successeurs: [] }
 
     ],
-    "a",
-    "b"
+    "c",
+    "d"
 )
 console.log(res);
