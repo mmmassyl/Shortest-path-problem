@@ -82,21 +82,40 @@ class Graphe {
         return Array.from(new Set([...predecesseurs, ...predecesseurs.map(predecesseur => this.anc(graphe, predecesseur)).flat()]));
     }
 
-    compConRec(profondeur, graphe, sommetX) {
+    compCon(
+        graphe,
+        sommetX,
+        { chemin, profondeur } = { chemin: [], profondeur: 0 }
+      ) {
         const successeurs = this.succ(graphe, sommetX);
-        if (successeurs.length === 0) return profondeur;
-        return Math.max(...successeurs.map(successeur => this.compConRec(profondeur + 1, graphe, successeur)));
-    }
-
-    compCon(graphe) {
-        const profondeurs = [];
+        if (successeurs.length === 0) return { chemin, profondeur };
+        return successeurs
+          .map((successeur) =>
+            this.compCon(graphe, successeur, {
+              chemin: [...chemin, sommetX],
+              profondeur: profondeur + 1
+            })
+          )
+          .reduce((p, c) => (p.value > c.value ? p : c));
+      }
+    
+    nbCompCon(graphe) {
+        let maxProfondeur = 0;
+        let nbCompCon = 0;
         for (const sommetCourant of graphe) {
-            profondeurs.push(this.compConRec(0, graphe, sommetCourant.sommet))
+          const composanteConnexe = this.compCon(graphe, sommetCourant.sommet);
+          if (composanteConnexe.profondeur < maxProfondeur) continue;
+          if (composanteConnexe.profondeur > maxProfondeur) {
+            maxProfondeur = composanteConnexe.profondeur;
+            nbCompCon = 1;
+            continue;
+          }
+          nbCompCon++;
         }
+        return nbCompCon;
+      }
     }
 
-    nbCompCon(graphe, sommetX) { }
-}
 const g = new Graphe();
 const res = g.compCon(
     [
