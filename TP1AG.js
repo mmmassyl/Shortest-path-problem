@@ -1,16 +1,4 @@
 class Graphe {
-    /*
-            Exemple de graphe:
-            [
-                { sommet: "a", successeurs: ["b", "c", "d"] },
-                { sommet: "b", successeurs: ["e"] },
-                { sommet: "c", successeurs: [] },
-                { sommet: "d", successeurs: ["c"] },
-                { sommet: "e", successeurs: [] }
-    
-            ]
-        */
-
     arc(graphe, sommetX, sommetY) {
         for (const sommetCourant of graphe) {
             if (sommetCourant.sommet === sommetX) {
@@ -46,6 +34,7 @@ class Graphe {
                 return sommetCourant.successeurs;
             }
         }
+        // return graphe.find(sommetCourant => sommetCourant.sommet === sommetX).successeurs
     }
 
     pred(graphe, sommetX) {
@@ -58,10 +47,10 @@ class Graphe {
             }
         }
         /*console.log(
-          `les predecesseurs de "${sommetX}" sont`,
-          predecesseurs.join(", ")
-        );
-        */
+              `les predecesseurs de "${sommetX}" sont`,
+              predecesseurs.join(", ")
+            );
+            */
         return predecesseurs;
     }
 
@@ -70,61 +59,77 @@ class Graphe {
             new Set([
                 ...this.succ(graphe, sommetX),
                 ...graphe
-                    .find((sommet) => sommet.sommet === sommetX)
+                    .find((sommet) => sommet.sommet === sommetX) //.succ(graphe, sommetX)
                     .successeurs.map((successeur) => this.desc(graphe, successeur))
-                    .flat()
+                    .flat(),
             ])
         );
     }
 
     anc(graphe, sommetX) {
-        const predecesseurs = this.pred(graphe, sommetX)
-        return Array.from(new Set([...predecesseurs, ...predecesseurs.map(predecesseur => this.anc(graphe, predecesseur)).flat()]));
+        const predecesseurs = this.pred(graphe, sommetX);
+        return Array.from(
+            new Set([
+                ...predecesseurs,
+                ...predecesseurs
+                    .map((predecesseur) => this.anc(graphe, predecesseur))
+                    .flat(),
+            ])
+        );
     }
 
     compCon(
         graphe,
         sommetX,
         { chemin, profondeur } = { chemin: [], profondeur: 0 }
-      ) {
+    ) {
         const successeurs = this.succ(graphe, sommetX);
-        if (successeurs.length === 0) return { chemin, profondeur };
+        if (successeurs.length === 0) {
+            return [{ chemin: [...chemin, sommetX], profondeur: profondeur + 1 }];
+        }
+
         return successeurs
-          .map((successeur) =>
-            this.compCon(graphe, successeur, {
-              chemin: [...chemin, sommetX],
-              profondeur: profondeur + 1
-            })
-          )
-          .reduce((p, c) => (p.value > c.value ? p : c));
-      }
-    
+            .map((successeur) =>
+                this.compCon(graphe, successeur, {
+                    chemin: [...chemin, sommetX],
+                    profondeur: profondeur + 1,
+                })
+            )
+            .flat()
+            .reduce((accumulateur, courant) => {
+                if (accumulateur.length === 0) return [courant];
+                if (courant.profondeur > accumulateur[0].profondeur) return [courant];
+                if (courant.profondeur < accumulateur[0].profondeur) {
+                    return accumulateur;
+                }
+                return [...accumulateur, courant];
+            }, []);
+    }
+
     nbCompCon(graphe) {
         let maxProfondeur = 0;
         let nbCompCon = 0;
         for (const sommetCourant of graphe) {
-          const composanteConnexe = this.compCon(graphe, sommetCourant.sommet);
-          if (composanteConnexe.profondeur < maxProfondeur) continue;
-          if (composanteConnexe.profondeur > maxProfondeur) {
-            maxProfondeur = composanteConnexe.profondeur;
-            nbCompCon = 1;
-            continue;
-          }
-          nbCompCon++;
+            const composanteConnexe = this.compCon(graphe, sommetCourant.sommet);
+            if (composanteConnexe[0].profondeur < maxProfondeur) continue;
+            if (composanteConnexe[0].profondeur > maxProfondeur) {
+                maxProfondeur = composanteConnexe[0].profondeur;
+                nbCompCon = composanteConnexe.length;
+                continue;
+            }
+            nbCompCon += composanteConnexe.length;
         }
         return nbCompCon;
-      }
     }
+}
 
 const g = new Graphe();
-const res = g.compCon(
-    [
-        { sommet: "a", successeurs: ["b", "c", "d"] },
-        { sommet: "b", successeurs: ["e"] },
-        { sommet: "c", successeurs: ["e"] },
-        { sommet: "d", successeurs: ["c"] },
-        { sommet: "e", successeurs: [] }
-    ],
-    "e"
-);
+const res = g.nbCompCon([
+    { sommet: 'a', successeurs: ['b', 'c'] },
+    { sommet: 'b', successeurs: ['f'] },
+    { sommet: 'c', successeurs: ['f'] },
+    { sommet: 'd', successeurs: ['e'] },
+    { sommet: 'e', successeurs: ['f'] },
+    { sommet: 'f', successeurs: [] },
+]);
 console.log(res);
