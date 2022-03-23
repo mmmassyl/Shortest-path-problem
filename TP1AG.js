@@ -1,3 +1,6 @@
+const readline = require('readline/promises');
+const { stdin: input, stdout: output } = require('process');
+
 class Graphe {
     arc(graphe, sommetX, sommetY) {
         for (const sommetCourant of graphe) {
@@ -26,7 +29,54 @@ class Graphe {
         // /* alt */ return this.arc(graphe, sommetX, sommetY) || this.arc(graphe, sommetY, sommetX);
     }
 
-    saisie(graphe) { }
+    async saisie() {
+
+        const rl = readline.createInterface({ input, output, terminal: false });
+        let graphe = [];
+
+        const answer = await rl.question('Apuyyer sur g pour saisir un graphe ');
+
+        if (answer !== "g") {
+            console.log("au revoir");
+            rl.close();
+        }
+
+        const rl2 = readline.createInterface({ input, output, terminal: false });
+
+        const recursiveAsyncReadLine = async function () {
+            const answer2 = await rl2.question('Saisir le nom du sommet ')
+            if (answer2 === "/") {
+                rl2.close();
+                return;
+            }
+            graphe.push({ sommet: answer2, successeurs: [] });
+
+            return recursiveAsyncReadLine();
+        };
+
+        await recursiveAsyncReadLine();
+
+        console.log(graphe);
+        for (const sommet of graphe) {
+            const recursiveAsyncReadLine2 = async function () {
+                const rl3 = readline.createInterface({ input, output, terminal: false });
+                const answer3 = await rl3.question(`Saisir le nom du successeur ${sommet.sommet} `)
+                if (answer3 === "/") {
+                    rl3.close();
+                    return;
+                }
+                console.log(sommet.successeurs);
+                sommet.successeurs.push(answer3);
+                return recursiveAsyncReadLine2();
+            };
+
+            await recursiveAsyncReadLine2();
+        }
+
+        rl.close();
+
+        return graphe;
+    }
 
     succ(graphe, sommetX) {
         for (const sommetCourant of graphe) {
@@ -61,7 +111,7 @@ class Graphe {
                 ...graphe
                     .find((sommet) => sommet.sommet === sommetX) //.succ(graphe, sommetX)
                     .successeurs.map((successeur) => this.desc(graphe, successeur))
-                    .flat(),
+                    .flat()
             ])
         );
     }
@@ -123,13 +173,16 @@ class Graphe {
     }
 }
 
-const g = new Graphe();
-const res = g.nbCompCon([
-    { sommet: 'a', successeurs: ['b', 'c'] },
-    { sommet: 'b', successeurs: ['f'] },
-    { sommet: 'c', successeurs: ['f'] },
-    { sommet: 'd', successeurs: ['e'] },
-    { sommet: 'e', successeurs: ['f'] },
-    { sommet: 'f', successeurs: [] },
-]);
-console.log(res);
+const main = async () => {
+    const g = new Graphe();
+
+    const gra = await g.saisie();
+    
+    const res = g.nbCompCon(gra, a);
+
+    console.log(gra);
+
+    console.log(res);
+}
+
+main();
