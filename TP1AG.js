@@ -78,6 +78,9 @@ class Graphe {
         return graphe;
     }
 
+
+
+
     succ(graphe, sommetX) {
         for (const sommetCourant of graphe) {
             if (sommetCourant.sommet === sommetX) {
@@ -175,14 +178,29 @@ class Graphe {
 
 const main = async () => {
     const g = new Graphe();
-
     const gra = await g.saisie();
-    
-    const res = g.nbCompCon(gra, a);
-
     console.log(gra);
 
+    const rl4 = readline.createInterface({ input, output, terminal: false });
+    const answer4 = await rl4.question('saisir sommetX : ');
+    if (answer4 === "/") {
+        rl4.close();
+    }
+    let sommetX = answer4;
+
+    const rl5 = readline.createInterface({ input, output, terminal: false });
+    const answer5 = await rl5.question('saisir sommetY : ');
+    if (answer5 === "/") {
+        rl5.close();
+    }
+    let sommetY = answer5;
+
+    const k = new Graphe();
+    const res = k.succ(gra, sommetX, sommetY);
     console.log(res);
+    rl4.close();
+    rl5.close();
+
 }
 
 main();
