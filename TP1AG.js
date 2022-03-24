@@ -78,9 +78,6 @@ class Graphe {
         return graphe;
     }
 
-
-
-
     succ(graphe, sommetX) {
         for (const sommetCourant of graphe) {
             if (sommetCourant.sommet === sommetX) {
@@ -176,31 +173,85 @@ class Graphe {
     }
 }
 
-const main = async () => {
+const mainGraphe = async () => {
     const g = new Graphe();
     const gra = await g.saisie();
     console.log(gra);
 
-    const rl4 = readline.createInterface({ input, output, terminal: false });
-    const answer4 = await rl4.question('saisir sommetX : ');
-    if (answer4 === "/") {
-        rl4.close();
-    }
-    let sommetX = answer4;
+    const main = async () => {
+        const rl4 = readline.createInterface({ input, output, terminal: false });
+        const answer4 = await rl4.question('saisir sommetX : ');
+        if (answer4 === "/") {
+            rl4.close();
+        }
+        let sommetX = answer4;
 
-    const rl5 = readline.createInterface({ input, output, terminal: false });
-    const answer5 = await rl5.question('saisir sommetY : ');
-    if (answer5 === "/") {
+        const rl5 = readline.createInterface({ input, output, terminal: false });
+        const answer5 = await rl5.question('saisir sommetY : ');
+        if (answer5 === "/") {
+            rl5.close();
+        }
+        let sommetY = answer5;
+
+        const rl6 = readline.createInterface({ input, output, terminal: false });
+        const answer6 = await rl6.question('\n Pour calculer : \n \n si deux sommets constitue un arc \t TAPEZ 1 \n \n si deux sommets constitue une arete \t TAPEZ 2 \n \n le successeur d un sommet \t \t TAPEZ 3 \n \n le predecesseur d un sommet \t \t TAPEZ 4 \n \n le descendant d un sommet \t \t TAPEZ 5 \n \n l ancestre d un sommet \t \t TAPEZ 6 \n \n la composante conexe d un sommet \t TAPEZ 7 \n \n le nb de composante connexe du graphe \t TAPEZ 8 \n \n sinon TAPEZ / \t ');
+        if (answer6 === "/") {
+            rl6.close();
+        }
+
+        const h = new Graphe();
+
+        if (answer6 === "1") {
+            const res = h.arc(gra, sommetX, sommetY);
+            console.log(res);
+        }
+
+        if (answer6 === "2") {
+            const res2 = h.arete(gra, sommetX, sommetY);
+            console.log(res2);
+        }
+
+        if (answer6 === "3") {
+            const res3 = h.succ(gra, sommetX);
+            console.log(res3);
+        }
+
+        if (answer6 === "4") {
+            const res4 = k.pred(gra, sommetX);
+            console.log(res4);
+        }
+
+        if (answer6 === "5") {
+            const res5 = h.desc(gra, sommetX);
+            console.log(res5);
+        }
+
+        if (answer6 === "6") {
+            const res6 = h.anc(gra, sommetX);
+            console.log(res6);
+        }
+
+        if (answer6 === "7") {
+            const res7 = h.compCon(gra, sommetX);
+            console.log(res7);
+        }
+
+        if (answer6 === "8") {
+            const res8 = h.nbCompCon(gra);
+            console.log(res8);
+        }
+
+        const rl7 = readline.createInterface({ input, output, terminal: false });
+        const answer7 = await rl7.question('souhaitez vous effectuer quune autre recherche soit effectuer? si oui tapez oui ');
+        if (answer7 === "oui") {
+            return main();
+        }
+        rl7.close();
+        rl4.close();
         rl5.close();
     }
-    let sommetY = answer5;
 
-    const k = new Graphe();
-    const res = k.succ(gra, sommetX, sommetY);
-    console.log(res);
-    rl4.close();
-    rl5.close();
+    main();
 
 }
-
-main();
+mainGraphe();
