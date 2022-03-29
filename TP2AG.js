@@ -1,7 +1,3 @@
-const readline = require('readline/promises');
-const { stdin: input, stdout: output } = require('process');
-
-
 class Graphe {
     arc(graphe, sommetX, sommetY) {
         for (const sommetCourant of graphe) {
@@ -28,58 +24,6 @@ class Graphe {
         }
         return false;
         // /* alt */ return this.arc(graphe, sommetX, sommetY) || this.arc(graphe, sommetY, sommetX);
-    }
-
-    async saisie() {
-        let graphe = [];
-
-        const rl = readline.createInterface({ input, output, terminal: false })
-        const recursiveAsyncReadLine = async function () {
-            const answer = await rl.question('Saisir le nom du sommet ')
-            if (answer === "") {
-                rl.close();
-                return;
-            }
-            graphe.push({ sommet: answer, successeurs: [], poids: [] });
-            console.log(graphe);
-            return recursiveAsyncReadLine();
-        };
-        await recursiveAsyncReadLine();
-
-        for (const sommet of graphe) {
-            const recursiveAsyncReadLine0 = async function () {
-                const rl0 = readline.createInterface({ input, output, terminal: false });
-                const answer0 = await rl0.question(`Saisir le nom du successeur ${sommet.sommet} `)
-                if (answer0 === "") {
-                    rl0.close();
-                    return;
-                }
-                console.log(sommet.successeurs);
-                sommet.successeurs.push(answer0);
-                console.log(graphe);
-                return recursiveAsyncReadLine0();
-            };
-            await recursiveAsyncReadLine0();
-        }
-
-        for (const sommet of graphe) {
-            const recursiveAsyncReadLine1 = async function () {
-                const rl1 = readline.createInterface({ input, output, terminal: false });
-                const answer1 = await rl1.question(`Saisir le poids ${sommet.sommet} & ${sommet.successeurs} : `)
-                if (answer1 === "") {
-                    rl1.close();
-                    return;
-                }
-                console.log(sommet.successeurs);
-                sommet.poids.push(answer1);
-                console.log(graphe);
-                return recursiveAsyncReadLine1();
-            };
-
-            await recursiveAsyncReadLine1();
-        }
-        rl.close();
-        return graphe;
     }
 
     succ(graphe, sommetX) {
@@ -109,12 +53,13 @@ class Graphe {
             new Set([...succs, ...succs.map((successeur) => this.desc(graphe, successeur)).flat()])
         );
     }
-    weightCounter(graphe, sommetX, { chemin, profondeur, poids } = { chemin: [], profondeur: 0, poids: 0 }) {
+
+    weightCounter(graphe, sommetX, { chemin, profondeur, poids } = { chemin: [], profondeur: 1, poids: 0 }) {
         const element = graphe
             .find(sommetCourant => sommetCourant.sommet === sommetX)
         if (element.successeurs.length === 0) {
             return [{
-                chemin: [...chemin, sommetX], profondeur: profondeur + 1, poids
+                chemin: [...chemin, sommetX], profondeur: profondeur, poids
             }];
         }
 
@@ -138,7 +83,7 @@ class Graphe {
                 ...predecesseurs,
                 ...predecesseurs
                     .map((predecesseur) => this.anc(graphe, predecesseur))
-                    .flat(),
+                    .flat()
             ])
         )
     }
@@ -181,14 +126,14 @@ const g = new Graphe();
 const res = g.weightCounter(
     [
         { sommet: "a", successeurs: ["b", "c", "d", "e"], poids: ["1", "7", "4", "1"] },
-        { sommet: "b", successeurs: ["a", "f"], poids: ["1", "6"] },
-        { sommet: "c", successeurs: ["a", "h"], poids: ["7", "4"] },
-        { sommet: "d", successeurs: ["a", "f", "g"], poids: ["4", "5", "3"] },
-        { sommet: "e", successeurs: ["a", "g", "h"], poids: ["1", "4", "1"] },
-        { sommet: "f", successeurs: ["b", "d", "g"], poids: ["6", "5", "5"] },
-        { sommet: "g", successeurs: ["d", "e", "f", "h"], poids: ["3", "4", "5", "2"] },
-        { sommet: "h", successeurs: ["c", "e", "g", "i"], poids: ["4", "1", "2", "53"] },
-        { sommet: "i", successeurs: ["h"], poids: ["53"] }
+        { sommet: "b", successeurs: ["f"], poids: ["6"] },
+        { sommet: "c", successeurs: ["h"], poids: ["4"] },
+        { sommet: "d", successeurs: ["f", "g"], poids: ["5", "3"] },
+        { sommet: "e", successeurs: ["g", "h"], poids: ["4", "1"] },
+        { sommet: "f", successeurs: ["g"], poids: ["5"] },
+        { sommet: "g", successeurs: ["h"], poids: ["2"] },
+        { sommet: "h", successeurs: ["i"], poids: ["53"] },
+        { sommet: "i", successeurs: [], poids: [] }
 
     ],
     "a"
